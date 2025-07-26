@@ -1,9 +1,9 @@
 import Car from "./car";
 import { ControlType } from "./controls";
 import { NeuralNetwork } from "./network";
-
 import Road from "./road";
 import Visualizer from "./visualizer";
+
 const carCanvas = document.getElementById("carCanvas") as HTMLCanvasElement;
 carCanvas.width = 200;
 const networkCanvas = document.getElementById(
@@ -16,7 +16,7 @@ const networkCtx = networkCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
-const N = 2000;
+const N = 1000;
 const cars = generateCars(N);
 let bestCar = cars[0];
 if (localStorage.getItem("bestBrain")) {
@@ -29,14 +29,18 @@ if (localStorage.getItem("bestBrain")) {
 }
 
 const traffic = [
-  new Car(road.getLaneCenter(1), -100, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(0), -300, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(2), -300, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(0), -500, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(1), -500, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(1), -700, 30, 50, ControlType.Dummy, 2),
-  new Car(road.getLaneCenter(2), -700, 30, 50, ControlType.Dummy, 2),
+  new Car(road.getLaneCenter(1), -100, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(0), -300, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(2), -300, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(0), -500, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(1), -500, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(1), -700, 30, 50, ControlType.Traffic, 2, "red"),
+  new Car(road.getLaneCenter(2), -700, 30, 50, ControlType.Traffic, 2, "red"),
 ];
+
+for (const trafficCar of traffic) {
+  trafficCar.brain = bestCar.brain;
+}
 
 animate(0);
 
@@ -62,7 +66,7 @@ function generateCars(n: number) {
 
 function animate(time: number) {
   for (let i = 0; i < traffic.length; i++) {
-    traffic[i].update(road.borders, []);
+    traffic[i].update(road.borders, traffic.filter((_, idx) => idx !== i));
   }
   for (let i = 0; i < cars.length; i++) {
     cars[i].update(road.borders, traffic);
@@ -78,14 +82,14 @@ function animate(time: number) {
 
   road.draw(carCtx);
   for (let i = 0; i < traffic.length; i++) {
-    traffic[i].draw(carCtx, "red");
+    traffic[i].draw(carCtx);
   }
   carCtx.globalAlpha = 0.2;
   for (let i = 0; i < cars.length; i++) {
-    cars[i].draw(carCtx, "blue");
+    cars[i].draw(carCtx);
   }
   carCtx.globalAlpha = 1;
-  bestCar.draw(carCtx, "blue", true);
+  bestCar.draw(carCtx, true);
 
   carCtx.restore();
 
