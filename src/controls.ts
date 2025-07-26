@@ -1,11 +1,20 @@
+export enum ControlType {
+    Keys,
+    Dummy,
+}
+
 export default class Controls {
     forward = false;
     left = false
     right = false
     reverse = false;
 
-    constructor() {
-        this.#addKeyboardListeners();
+    constructor(controlType: ControlType) {
+        if (controlType === ControlType.Keys) {
+            this.#addKeyboardListeners();
+        } else {
+            this.forward = true;
+        }
     }
 
     #addKeyboardListeners() {
