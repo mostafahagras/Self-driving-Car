@@ -1,4 +1,6 @@
 import Controls from "./controls"
+import Sensor from "./sensor";
+import type { Segment } from "./types";
 
 export default class Car {
     x: number;
@@ -11,6 +13,7 @@ export default class Car {
     maxSpeed = 3;
     friction = 0.05
     acceleration = 0.2;
+    sensor: Sensor;
 
     constructor(x: number, y: number, width: number, height: number) {
         this.x = x;
@@ -19,10 +22,12 @@ export default class Car {
         this.height = height
 
         this.controls = new Controls()
+        this.sensor = new Sensor(this)
     }
 
-    update() {
+    update(borders: Segment[]) {
         this.#move();
+        this.sensor.update(borders)
     }
 
     #move() {
@@ -68,6 +73,7 @@ export default class Car {
         ctx.rect(-this.width / 2, - this.height / 2, this.width, this.height);
         ctx.fill()
         ctx.restore()
+        this.sensor.draw(ctx)
     }
 
 }

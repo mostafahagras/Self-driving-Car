@@ -1,3 +1,4 @@
+import type { Segment } from "./types";
 import { lerp } from "./utils";
 
 export default class Road {
@@ -8,7 +9,7 @@ export default class Road {
     right: number;
     top: number;
     bottom: number;
-    borders: { x: number; y: number }[][];
+    borders: Segment[];
     constructor(x: number, width: number, laneCount = 3) {
         this.x = x;
         this.width = width;
