@@ -36,7 +36,8 @@ export default class Car {
     this.maxSpeed = maxSpeed;
 
     this.controls = new Controls(controlType);
-    this.useBrain = controlType === ControlType.Ai;
+    this.useBrain =
+      controlType === ControlType.Ai || controlType === ControlType.Traffic;
     if (controlType !== ControlType.Dummy) {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
@@ -53,7 +54,6 @@ export default class Car {
       this.sensor.update(roadBorders, traffic);
       const offsets = this.sensor.readings.map((s) => (s ? 1 - s.offset : 0));
       const outputs = NeuralNetwork.feedForward(offsets, this.brain);
-      console.log(outputs);
 
       if (this.useBrain) {
         this.controls.forward = !!outputs[0];
@@ -136,7 +136,7 @@ export default class Car {
     this.y -= Math.cos(this.angle) * this.speed;
   }
 
-  draw(ctx: CanvasRenderingContext2D, color: string) {
+  draw(ctx: CanvasRenderingContext2D, color: string, drawSensors = false) {
     if (this.damaged) {
       ctx.fillStyle = "gray";
     } else {
@@ -148,6 +148,8 @@ export default class Car {
       ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
     }
     ctx.fill();
-    this.sensor?.draw(ctx);
+    if (drawSensors) {
+      this.sensor?.draw(ctx);
+    }
   }
 }

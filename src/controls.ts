@@ -2,6 +2,7 @@ export enum ControlType {
   Ai,
   Keys,
   Dummy,
+  Traffic,
 }
 
 export default class Controls {
